@@ -23,44 +23,7 @@ The environment includes:
 
 ## Architecture
 
-```text
-                         GitHub
-                            |
-                      GitHub Actions
-                            |
-                       OIDC Token
-                            |
-                            v
-                     AWS IAM Role
-                            |
-                     Terraform CI
-                            |
-             +--------------+--------------+
-             |                             |
-             v                             v
-       S3 Remote State               AWS Infrastructure
-       + State Lock                         |
-                                            |
-                                   +--------+--------+
-                                   |                 |
-                                  VPC               S3
-                                   |
-                              Public Subnet
-                                   |
-                                  EC2
-                                   |
-                                NGINX
-                                   |
-                          CloudWatch Metrics
-                                   |
-                            CloudWatch Alarm
-                                   |
-                                  SNS
-                                   |
-                                Lambda
-                                   |
-                           CloudWatch Logs
-```
+![AWS Cloud Operations and Automation Architecture](architecture-diagram.png)
 
 Infrastructure as Code
 Terraform provisions and manages the AWS infrastructure.
