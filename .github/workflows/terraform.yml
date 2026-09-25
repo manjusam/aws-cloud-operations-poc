@@ -17,32 +17,32 @@ jobs:
     name: Terraform Validate and Plan
     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+steps:
+  - name: Checkout repository
+    uses: actions/checkout@v4
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: 1.16.3
+  - name: Setup Terraform
+    uses: hashicorp/setup-terraform@v3
+    with:
+      terraform_version: 1.16.3
 
-      - name: Terraform Format Check
-        run: terraform fmt -check
+  - name: Terraform Format Check
+    run: terraform fmt -check
 
-      - name: Terraform Init
-        run: terraform init
+  - name: Configure AWS credentials
+    uses: aws-actions/configure-aws-credentials@v6.3.0
+    with:
+      role-to-assume: arn:aws:iam::188616459043:role/github-actions-terraform-plan
+      aws-region: ap-southeast-2
 
-      - name: Terraform Validate
-        run: terraform validate
+  - name: Verify AWS identity
+    run: aws sts get-caller-identity
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v6.3.0
-        with:
-          role-to-assume: arn:aws:iam::188616459043:role/github-actions-terraform-plan
-          aws-region: ap-southeast-2
+  - name: Terraform Init
+    run: terraform init
 
-      - name: Verify AWS identity
-        run: aws sts get-caller-identity
+  - name: Terraform Validate
+    run: terraform validate
 
-      - name: Terraform Plan
-        run: terraform plan -input=false
+  - name: Terraform Plan
+    run: terraform plan -input=false
