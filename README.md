@@ -2,6 +2,16 @@
 
 A hands-on AWS infrastructure and automation project demonstrating Terraform, EC2, IAM, S3, CloudWatch, SNS, Lambda, Packer, GitHub Actions, and secure OIDC-based CI authentication.
 
+## Project Status
+
+The AWS environment was successfully deployed, tested end-to-end, and subsequently decommissioned to avoid ongoing cloud costs.
+
+The repository is retained as a portfolio demonstration of the Terraform, Packer, AWS monitoring/automation, and CI/CD implementation.
+
+During the active deployment, Terraform state was stored in an encrypted and versioned S3 backend with state locking, and GitHub Actions authenticated to AWS using OIDC to run Terraform plans.
+
+Following decommissioning, the remote state bucket and deployed AWS resources were removed. The current GitHub Actions workflow performs Terraform formatting and validation checks without deploying infrastructure.
+
 ## Project Objectives
 
 This project demonstrates how AWS infrastructure can be provisioned, monitored, automated, and validated using Infrastructure as Code and CI/CD practices.
@@ -57,27 +67,47 @@ EC2 CPU
 → Lambda
 → CloudWatch Logs
 The complete event flow was tested by generating CPU load on the EC2 instance and verifying that the CloudWatch alarm triggered the Lambda function through SNS.
-Terraform Remote State
-Terraform state is stored in a dedicated S3 bucket instead of being committed to Git.
-The backend uses:
+## Terraform Remote State
+
+During the active deployment, Terraform state was migrated from local state to a dedicated S3 backend.
+
+The backend was configured with:
+
 - S3 server-side encryption
 - S3 versioning
 - Block Public Access
 - Terraform S3 state locking
-This allows local Terraform operations and CI to work against the same infrastructure state.
-CI/CD
-GitHub Actions runs Terraform checks whenever changes are pushed to the main branch.
-The workflow performs:
+
+This allowed local Terraform operations and GitHub Actions CI to work against the same infrastructure state.
+
+After the environment was successfully tested and destroyed, the remote state bucket and its historical object versions were removed as part of the project cleanup.
+
+## CI/CD
+
+During the active deployment, GitHub Actions performed:
+
 1. Repository checkout
 2. Terraform setup
-3. terraform fmt -check
-4. AWS authentication
-5. terraform init
-6. terraform validate
-7. terraform plan
-The pipeline intentionally does not automatically run terraform apply.
-Infrastructure changes therefore require review before deployment.
+3. `terraform fmt -check`
+4. AWS authentication using OIDC
+5. `terraform init`
+6. `terraform validate`
+7. `terraform plan`
+
+The pipeline intentionally did not automatically run `terraform apply`, keeping infrastructure deployment under manual control.
+
+The live AWS environment has since been decommissioned. The current portfolio workflow safely performs:
+
+1. Repository checkout
+2. Terraform setup
+3. `terraform fmt -check`
+4. `terraform init -backend=false`
+5. `terraform validate`
+
+This preserves automated Terraform code validation without requiring the deleted remote backend or active AWS infrastructure.
+
 Secure AWS Authentication
+
 GitHub Actions authenticates to AWS using OpenID Connect (OIDC).
 No long-lived AWS access key or secret access key is stored in GitHub.
 The workflow assumes a dedicated AWS IAM role using temporary credentials.
@@ -89,7 +119,9 @@ This demonstrates the separation between:
 - Packer — machine image creation
 - GitHub Actions — CI validation
 - AWS services — runtime operations and monitoring
+
 Testing Performed
+
 The project was tested by:
 - Running terraform fmt
 - Running terraform validate
@@ -105,7 +137,9 @@ The project was tested by:
 - Running Terraform through GitHub Actions using AWS OIDC
 - Migrating Terraform state from local state to an S3 backend
 - Confirming Terraform reports no infrastructure drift
+
 Technologies
+
 - AWS
 - Terraform
 - Packer
@@ -122,7 +156,9 @@ Technologies
 - NGINX
 - Python
 - Bash
+
 Key Learning Outcomes
+
 This POC provided practical experience with:
 - Infrastructure as Code
 - AWS identity and access management
